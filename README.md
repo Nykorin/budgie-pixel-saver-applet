@@ -1,3 +1,6 @@
+# Abandoned
+
+
 # Budgie Pixel Saver
 This applet hides the title bar from maximized windows and creates a new one inside the panel. Inspired from gnome extension pixel-saver.
 
