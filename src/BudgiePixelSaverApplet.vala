@@ -13,8 +13,44 @@ public class Plugin : Budgie.Plugin, Peas.ExtensionBase
     }
 }
 
+/**
+ * The box holding the title and buttons. It's a GtkBox (so it can turn vertical on side
+ * panels) that calls itself "headerbar" in CSS, so that themes style the buttons as they
+ * style window title bar buttons.
+ */
+public class TitleBox : Gtk.Box
+{
+    class construct {
+        set_css_name("headerbar");
+    }
+
+    public TitleBox() {
+        Object(orientation: Gtk.Orientation.HORIZONTAL, spacing: 0);
+    }
+}
+
 public class Applet : Budgie.Applet
 {
+    /* Undoes what themes give a window's header bar itself, so only the buttons and
+     * title keep the theme's look. Priority APPLICATION: above the theme, below the
+     * user's own ~/.config/gtk-3.0/gtk.css. */
+    const string CSS = """
+        headerbar.pixel-saver {
+            background: none;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+            min-height: 0;
+            margin: 0;
+            padding: 0 4px;
+        }
+        headerbar.pixel-saver button.titlebutton {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+    """;
+    static Gtk.CssProvider? css_provider = null;
+
     Gtk.Label label;
     Gtk.Button minimize_button;
     Gtk.Button maximize_button;
@@ -22,7 +58,7 @@ public class Applet : Budgie.Applet
     Gtk.Image maximize_image;
     Gtk.Image restore_image;
     Gtk.EventBox event_box;
-    Gtk.Box applet_container;
+    TitleBox applet_container;
 
     bool is_buttons_visible {get; set;}
     bool is_title_visible {get; set;}
@@ -56,7 +92,7 @@ public class Applet : Budgie.Applet
         this.event_box = new Gtk.EventBox();
         this.event_box.add(this.label);
 
-        this.applet_container = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
+        this.applet_container = new TitleBox ();
         this.applet_container.pack_start (this.event_box, false, false, 0);
         this.applet_container.pack_start (this.minimize_button, false, false, 0);
         this.applet_container.pack_start (this.maximize_button, false, false, 0);
@@ -140,7 +176,20 @@ public class Applet : Budgie.Applet
     }
 
     private void set_css_styles(){
+        if (css_provider == null) {
+            css_provider = new Gtk.CssProvider();
+            try {
+                css_provider.load_from_data(CSS);
+            } catch (Error e) {
+                warning("Could not load the applet's CSS: %s", e.message);
+            }
+            Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), css_provider,
+                Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
+        }
+
         this.applet_container.get_style_context().add_class("titlebar");
+        this.applet_container.get_style_context().add_class("pixel-saver");
+        this.label.get_style_context().add_class("title");
 
         this.minimize_button.get_style_context().add_class("titlebutton");
         this.minimize_button.get_style_context().add_class("minimize");
