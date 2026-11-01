@@ -1,8 +1,13 @@
-# Abandoned
-
-
 # Budgie Pixel Saver
-This applet hides the title bar from maximized windows and creates a new one inside the panel. Inspired from gnome extension pixel-saver.
+This applet shows the active window's title and its minimize, maximize and close buttons inside the panel. Inspired from gnome extension pixel-saver.
+
+Version 5 is a port to Budgie Desktop 10.10 (Wayland, libpeas-2). It works on any compositor that supports
+wlr-foreign-toplevel (labwc, wayfire). Two things from the X11 version are gone:
+
+* Hiding the real title bar of maximized windows: on Wayland a panel applet can't change another
+  window's decorations. Use your compositor's settings for that (e.g. a labwc window rule).
+* The "Hide for Client Side Decorated windows" option: whether a window draws its own title bar isn't
+  visible to the panel on Wayland.
 
 ![Screenshot](screenshot.jpg)
 
@@ -15,15 +20,13 @@ This applet hides the title bar from maximized windows and creates a new one ins
 
 ## Dependencies
 ```
-budgie-1.0 >= 2
-gnome-desktop-3.0
-gtk+-3.0 >= 3.18
-gdk-x11-3.0
-glib-2.0
-libpeas-1.0 >= 1.8.0
-libwnck-3.0 >= 3.14.0
+budgie-3.0 (Budgie Desktop >= 10.10)
+gtk+-3.0 >= 3.24
+glib-2.0 >= 2.64
+libpeas-2
+libxfce4windowing-0 >= 4.19.3 (and libxfce4windowingui-0)
 vala
-xprop
+meson, ninja
 ```
 
 ### Installing
@@ -31,7 +34,7 @@ xprop
 **From source**  
 ```bash
 mkdir build && cd build
-meson --prefix /usr --buildtype=plain ..
+meson setup --prefix /usr --buildtype=plain ..
 ninja
 sudo ninja install
 ```

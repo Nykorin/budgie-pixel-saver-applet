@@ -26,7 +26,6 @@ public class Applet : Budgie.Applet
 
     bool is_buttons_visible {get; set;}
     bool is_title_visible {get; set;}
-    bool is_active_window_csd {get; set;}
     bool is_active_window_maximized {get; set;}
 
     public string uuid { public set; public get; }
@@ -40,11 +39,10 @@ public class Applet : Budgie.Applet
     {
         Object(uuid: uuid);
         this.title_bar_manager = PixelSaver.TitleBarManager.INSTANCE;
-        this.title_bar_manager.register();
 
         this.minimize_button = new Gtk.Button.from_icon_name ("window-minimize-symbolic");
         this.maximize_button = new Gtk.Button.from_icon_name ("window-maximize-symbolic");
-        this.close_button = new Gtk.Button.from_icon_name ("window-close-symbolic", Gtk.IconSize.BUTTON);
+        this.close_button = new Gtk.Button.from_icon_name ("window-close-symbolic");
 
         this.maximize_image = new Gtk.Image.from_icon_name ("window-maximize-symbolic", Gtk.IconSize.BUTTON);
         this.restore_image = new Gtk.Image.from_icon_name ("window-restore-symbolic", Gtk.IconSize.BUTTON);
@@ -52,7 +50,8 @@ public class Applet : Budgie.Applet
 
         this.label = new Gtk.Label ("");
         this.label.set_ellipsize (Pango.EllipsizeMode.END);
-        this.label.set_alignment(0, 0.5f);
+        this.label.xalign = 0;
+        this.label.yalign = 0.5f;
 
         this.event_box = new Gtk.EventBox();
         this.event_box.add(this.label);
@@ -75,8 +74,12 @@ public class Applet : Budgie.Applet
 
         event_box.button_release_event.connect ((event) => {
             if (event.button == 3) {
-                Wnck.ActionMenu menu = this.title_bar_manager.get_action_menu_for_active_window();
-                menu.popup(null, null, null, event.button, Gtk.get_current_event_time());
+                Gtk.Menu? menu = this.title_bar_manager.get_action_menu_for_active_window();
+                if (menu == null) return Gdk.EVENT_PROPAGATE;
+                menu.attach_to_widget(this.event_box, null);
+                menu.deactivate.connect(() => { menu.destroy(); });
+                menu.show_all();
+                menu.popup_at_pointer(event);
                 return true;
             }
             return Gdk.EVENT_PROPAGATE;
@@ -99,24 +102,14 @@ public class Applet : Budgie.Applet
             this.label.set_tooltip_text(title);
         });
 
-        this.title_bar_manager.on_window_state_changed.connect((is_maximized) => {
-            this.is_active_window_maximized = is_maximized;
-            this.update_visibility(false);
-            if(is_maximized) {
-                this.maximize_button.image = this.restore_image;
-            } else {
-                this.maximize_button.image = this.maximize_image;
-            }
-        });
+        this.title_bar_manager.on_window_state_changed.connect(this.on_maximized_changed);
 
         this.title_bar_manager.on_active_window_changed.connect(
-            (can_minimize, can_maximize, can_close, is_active_window_csd, is_active_window_maximized) => {
+            (can_minimize, can_maximize, can_close, is_active_window_maximized) => {
                 this.minimize_button.set_sensitive(can_minimize);
                 this.maximize_button.set_sensitive(can_maximize);
                 this.close_button.set_sensitive(can_close);
-                this.is_active_window_csd = is_active_window_csd;
-                this.is_active_window_maximized = is_active_window_maximized;
-                this.update_visibility(false);
+                this.on_maximized_changed(is_active_window_maximized);
             }
         );
 
@@ -130,14 +123,20 @@ public class Applet : Budgie.Applet
         this.on_settings_change("visibility");
 
 
-        wm_settings = new GLib.Settings("com.solus-project.budgie-wm");
-        wm_settings.changed.connect(this.on_wm_settings_changed);
-        this.on_wm_settings_changed("button-style");
+        var schema_source = SettingsSchemaSource.get_default();
+        if (schema_source != null && schema_source.lookup("com.solus-project.budgie-wm", true) != null) {
+            wm_settings = new GLib.Settings("com.solus-project.budgie-wm");
+            wm_settings.changed.connect(this.on_wm_settings_changed);
+            this.on_wm_settings_changed("button-style");
+        }
 
+        this.title_bar_manager.refresh();
     }
 
-    ~Applet(){
-        this.title_bar_manager.unregister();
+    private void on_maximized_changed(bool is_maximized) {
+        this.is_active_window_maximized = is_maximized;
+        this.maximize_button.image = is_maximized ? this.restore_image : this.maximize_image;
+        this.update_visibility(false);
     }
 
     private void set_css_styles(){
@@ -178,10 +177,11 @@ public class Applet : Budgie.Applet
     }
 
     void update_visibility(bool is_settings_changed = false){
-        bool hide_for_csd = this.is_active_window_csd && this.settings.get_boolean("hide-for-csd");
+        if (this.settings == null) return;
+
         bool hide_for_unmaximized = !this.is_active_window_maximized && this.settings.get_boolean("hide-for-unmaximized");
 
-        if( !this.is_buttons_visible || hide_for_unmaximized || hide_for_csd ) {
+        if( !this.is_buttons_visible || hide_for_unmaximized ) {
             this.maximize_button.hide();
             this.minimize_button.hide();
             this.close_button.hide();
@@ -191,7 +191,7 @@ public class Applet : Budgie.Applet
             this.close_button.show();
         }
 
-        if(!this.is_title_visible || hide_for_csd || hide_for_unmaximized) {
+        if(!this.is_title_visible || hide_for_unmaximized) {
             this.label.hide();
         } else {
             this.label.show();
@@ -226,15 +226,18 @@ public class Applet : Budgie.Applet
         if (position == Budgie.PanelPosition.LEFT) {
             this.label.angle = 90;
             this.applet_container.orientation = Gtk.Orientation.VERTICAL;
-            this.label.set_alignment(0.5f, 1);
+            this.label.xalign = 0.5f;
+            this.label.yalign = 1;
         } else if (position == Budgie.PanelPosition.RIGHT) {
             this.label.angle = 270;
             this.applet_container.orientation = Gtk.Orientation.VERTICAL;
-            this.label.set_alignment(0.5f, 0);
+            this.label.xalign = 0.5f;
+            this.label.yalign = 0;
         } else {
             this.label.angle = 0;
             this.applet_container.orientation = Gtk.Orientation.HORIZONTAL;
-            this.label.set_alignment(0, 0.5f);
+            this.label.xalign = 0;
+            this.label.yalign = 0.5f;
         }
     }
 
@@ -254,16 +257,13 @@ public class AppletSettings : Gtk.Grid
     Settings? settings = null;
 
     [GtkChild]
-    private Gtk.SpinButton? spinbutton_length;
+    private unowned Gtk.SpinButton spinbutton_length;
 
     [GtkChild]
-    private Gtk.ComboBox? combobox_visibility;
+    private unowned Gtk.ComboBox combobox_visibility;
 
     [GtkChild]
-    private Gtk.Switch? switch_csd;
-
-    [GtkChild]
-    private Gtk.Switch? switch_unmaximized;
+    private unowned Gtk.Switch switch_unmaximized;
 
     public AppletSettings(Settings? settings)
     {
@@ -271,7 +271,6 @@ public class AppletSettings : Gtk.Grid
 
         this.settings.bind("size", spinbutton_length, "value", SettingsBindFlags.DEFAULT);
         this.settings.bind("visibility", combobox_visibility, "active", SettingsBindFlags.DEFAULT);
-        this.settings.bind("hide-for-csd", switch_csd, "active", SettingsBindFlags.DEFAULT);
         this.settings.bind("hide-for-unmaximized", switch_unmaximized, "active", SettingsBindFlags.DEFAULT);
     }
 }

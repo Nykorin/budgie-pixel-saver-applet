@@ -11,11 +11,6 @@
       <summary>Visibility option</summary>
       <description>Sets which parts of applet to show</description>
     </key>
-    <key type="b" name="hide-for-csd">
-      <default>false</default>
-      <summary>Hide if window is CSD</summary>
-      <description>Whether to hide applet if window is Client Side Decorated</description>
-    </key>
     <key type="b" name="hide-for-unmaximized">
       <default>false</default>
       <summary>Hide if window is unmaximized</summary>
