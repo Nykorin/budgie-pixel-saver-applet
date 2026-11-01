@@ -9,9 +9,15 @@ Each bullet starts with the file it touches; paths are relative to the repositor
 ## [2026-11-01]
 
 ### Added
+- **src/title/:** Pixel Saver Title: the active window's title; double-click (un)maximizes the window, right-click opens its menu. Settings: title length, hide while the window isn't maximized *(Claude, directed by user)*
+- **src/buttons/:** Pixel Saver Buttons: minimize, maximize and close buttons. Settings: a switch per button, the order (full names separated by commas or spaces, in any case; buttons left out follow in the usual order, unknown words are ignored and flagged in the settings field, and empty follows Budgie's window button layout), hide while the window isn't maximized *(Claude, directed by user)*
+- **src/common/:** `libbudgie-pixel-saver-common.so` with the window tracker, `TitleBox` and a settings page helper, installed next to the plugin modules (rpath `$ORIGIN`, `-z nodelete`): the panel registers its types once and both applets share one window tracker *(Claude, directed by user)*
+- **src/buttons/test-window-button.vala, src/meson.build:** `meson test` checks the order parsing *(Claude, directed by user)*
 - **CHANGELOG.md:** This file, for the changes made on top of upstream *(Claude, directed by user)*
 
 ### Changed
+- **meson.build:** Needs meson 1.11, for `install_vala_header`/`install_vala_vapi` *(Claude, directed by user)*
+- **README.md:** Both applets, the order syntax, and that panels with the old applet need the new ones added *(Claude, directed by user)*
 - **src/BudgiePixelSaverApplet.vala:** The title and buttons sit in a `TitleBox`, a GtkBox with the CSS name `headerbar`, so the theme's `headerbar button.titlebutton` rules (hover, pressed, close colours) apply to the buttons; built-in CSS at application priority strips the header bar's own background, border, shadow and height inside the panel, and `~/.config/gtk-3.0/gtk.css` still overrides it. The title has the `.title` class, which most themes make bold. Compared in a nested session with Materia, Adwaita and CachyOS-Nord *(Claude, directed by user)*
 - **src/TitleBarManager.vala:** Tracks the active window through libxfce4windowing instead of libwnck, so it works on Wayland (wlr-foreign-toplevel: labwc, wayfire) as well as X11; minimize, (un)maximize and close go through it. The shown window stays until it's minimized or closed, as clicking the panel can take the focus from it, and `refresh()` re-emits the state for an applet that has just connected. The active-window handler is a method with a nullable argument: the libxfce4windowing vapi marks the previous window non-null, so a lambda rejected the NULL sent when no window was active before. Tested in a nested Budgie 10.10 session on labwc *(Claude, directed by user)*
 - **src/BudgiePixelSaverApplet.vala:** Built against budgie-3.0 and libpeas-2; the right-click menu is `Xfw.WindowActionMenu`; `com.solus-project.budgie-wm` is read only when installed; deprecated GTK calls replaced *(Claude, directed by user)*
@@ -20,6 +26,11 @@ Each bullet starts with the file it touches; paths are relative to the repositor
 - **README.md:** The "Abandoned" note is gone; what the port changes, and the new dependencies *(Claude, directed by user)*
 
 ### Removed
+- **src/BudgiePixelSaverApplet.vala, src/BudgiePixelSaverApplet.plugin.in, src/net.milgar.budgie-pixel-saver.gschema.xml:** The single "Budgie Pixel Saver" applet; panels that had it need the two new applets added *(Claude, directed by user)*
+- **src/settings.ui, src/plugin.gresource.xml:** The settings pages are built in code *(Claude, directed by user)*
 - **src/TitleBarManager.vala:** Hiding the real title bar of maximized windows (`xprop` setting `_GTK_HIDE_TITLEBAR_WHEN_MAXIMIZED`): on Wayland a panel applet can't change another window's decorations, and the compositor is no longer budgie-wm *(Claude, directed by user)*
 - **src/settings.ui, src/net.milgar.budgie-pixel-saver.gschema.xml:** The "Hide for Client Side Decorated windows" option: on Wayland the panel can't see whether a window draws its own title bar *(Claude, directed by user)*
+
+### Fixed
+- **src/common/TitleBox.vala:** Applets disconnect from the shared window tracker when they're removed from the panel; before, the tracker kept calling into removed applets *(Claude, directed by user)*
 

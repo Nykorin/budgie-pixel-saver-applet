@@ -2,6 +2,7 @@ project(
     'budgie-pixel-saver-applet',
     ['c', 'vala'],
     version: '5.0.0',
+    meson_version: '>= 1.11.0',
     license: [
         'GPL-2.0'
     ],

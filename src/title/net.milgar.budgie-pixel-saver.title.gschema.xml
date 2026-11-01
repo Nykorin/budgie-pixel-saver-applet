@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="net.milgar.budgie-pixel-saver.title">
+    <key type="i" name="size">
+      <default>40</default>
+      <summary>Title length</summary>
+      <description>Width of the title, in characters</description>
+    </key>
+    <key type="b" name="hide-for-unmaximized">
+      <default>false</default>
+      <summary>Hide if window is unmaximized</summary>
+      <description>Whether to hide the title while the active window isn't maximized</description>
+    </key>
+  </schema>
+</schemalist>

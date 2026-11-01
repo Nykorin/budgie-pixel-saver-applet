@@ -1,0 +1,8 @@
+[Plugin]
+Module=pixelsavertitle.so
+Name=Pixel Saver Title
+Description=Title of the active window
+Authors=Mehmet Ali İLGAR <mehmet.ali@milgar.net>
+Copyright=Copyright © 2017 Mehmet Ali İLGAR
+Website=https://github.com/ilgarmehmetali/budgie-pixel-saver-applet
+Icon=window-symbolic

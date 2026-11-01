@@ -1,20 +1,31 @@
 # Budgie Pixel Saver
-This applet shows the active window's title and its minimize, maximize and close buttons inside the panel. Inspired from gnome extension pixel-saver.
+Two panel applets that put the active window's title and its minimize, maximize and close buttons
+in the panel. Inspired from gnome extension pixel-saver.
 
-Version 5 is a port to Budgie Desktop 10.10 (Wayland, libpeas-2). It works on any compositor that supports
-wlr-foreign-toplevel (labwc, wayfire). Two things from the X11 version are gone:
+* **Pixel Saver Title**: the active window's title. Double-click it to (un)maximize the window,
+  right-click it for the window menu. Settings: title length, hide while the window isn't maximized.
+* **Pixel Saver Buttons**: minimize, maximize and close buttons. Settings: a switch per button, the
+  button order, hide while the window isn't maximized.
 
-* Hiding the real title bar of maximized windows: on Wayland a panel applet can't change another
+  The order is the button names (`Minimize`, `Maximize`, `Close`) separated by commas or spaces, in
+  any case, e.g. `close, minimize, maximize` or `Close Minimize`. Buttons left out follow in the usual
+  order, and words that aren't button names are ignored (the settings field marks them). Left empty,
+  the order follows Budgie's window button layout.
+
+Add each applet as often as you like: every copy has its own settings, so you can, for example, put the
+title on the left and a lone close button at the far right. The buttons take the GTK theme's window
+title bar button style.
+
+Version 5 is a port to Budgie Desktop 10.10 (Wayland, libpeas-2). It works on any compositor that
+supports wlr-foreign-toplevel (labwc, wayfire). Compared with the X11 version:
+
+* The single "Budgie Pixel Saver" applet is now these two applets; panels that had it need them added.
+* Hiding the real title bar of maximized windows is gone: on Wayland a panel applet can't change another
   window's decorations. Use your compositor's settings for that (e.g. a labwc window rule).
-* The "Hide for Client Side Decorated windows" option: whether a window draws its own title bar isn't
-  visible to the panel on Wayland.
+* The "Hide for Client Side Decorated windows" option is gone: whether a window draws its own title bar
+  isn't visible to the panel on Wayland.
 
 ![Screenshot](screenshot.jpg)
-
-* Added settings to choose action buttons and title bar visibility. This way its possible to create different layouts with multiple applets.
-* Added settings to set title length.
-
-![Screenshot](screenshot2.jpg)
 
 ---
 
@@ -26,7 +37,7 @@ glib-2.0 >= 2.64
 libpeas-2
 libxfce4windowing-0 >= 4.19.3 (and libxfce4windowingui-0)
 vala
-meson, ninja
+meson >= 1.11, ninja
 ```
 
 ### Installing
@@ -36,6 +47,7 @@ meson, ninja
 mkdir build && cd build
 meson setup --prefix /usr --buildtype=plain ..
 ninja
+meson test        # optional: checks the button order parsing
 sudo ninja install
 ```
 
