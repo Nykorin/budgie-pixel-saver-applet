@@ -8,7 +8,7 @@ public enum WindowButton {
     CLOSE;
 
     public static WindowButton? from_name(string name) {
-        switch (name.down()) {
+        switch (name) {
             case "minimize": return MINIMIZE;
             case "maximize": return MAXIMIZE;
             case "close": return CLOSE;
@@ -17,14 +17,14 @@ public enum WindowButton {
     }
 
     /**
-     * The button order from the "order" setting: full names separated by commas
-     * and/or spaces, any case. Buttons it leaves out follow in default_order.
-     * Words that aren't button names go to unknown.
+     * The button order from the "order" setting: lowercase button names separated
+     * by spaces. Buttons it leaves out follow in default_order. Words that aren't
+     * button names go to unknown.
      */
     public static WindowButton[] parse_order(string text, WindowButton[] default_order, out string[] unknown) {
         WindowButton[] order = {};
         string[] bad = {};
-        foreach (string word in Regex.split_simple("[,\\s]+", text.strip())) {
+        foreach (string word in text.split(" ")) {
             if (word == "") continue;
             WindowButton? button = from_name(word);
             if (button == null) {

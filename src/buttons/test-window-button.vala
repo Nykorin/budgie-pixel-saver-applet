@@ -18,13 +18,14 @@ void check(string text, WindowButton[] default_order, WindowButton[] expected, s
 void main(string[] args) {
     Test.init(ref args);
     Test.add_func("/order/empty", () => check("", USUAL, USUAL, {}));
-    Test.add_func("/order/blank", () => check("  ,, ", USUAL, USUAL, {}));
-    Test.add_func("/order/commas", () => check("Close,Minimize,Maximize", USUAL, { CLOSE, MIN, MAX }, {}));
+    Test.add_func("/order/blank", () => check("   ", USUAL, USUAL, {}));
     Test.add_func("/order/spaces", () => check("maximize close minimize", USUAL, { MAX, CLOSE, MIN }, {}));
-    Test.add_func("/order/mixed", () => check(" CLOSE ,  maximize\tMiNiMiZe ", USUAL, { CLOSE, MAX, MIN }, {}));
+    Test.add_func("/order/extra-spaces", () => check("  close   minimize ", USUAL, { CLOSE, MIN, MAX }, {}));
+    Test.add_func("/order/capitals", () => check("Close MINIMIZE maximize", USUAL, { MAX, MIN, CLOSE }, { "Close", "MINIMIZE" }));
+    Test.add_func("/order/commas", () => check("close,minimize maximize", USUAL, { MAX, MIN, CLOSE }, { "close,minimize" }));
     Test.add_func("/order/partial", () => check("close", USUAL, { CLOSE, MIN, MAX }, {}));
     Test.add_func("/order/partial-left-default", () => check("maximize", { CLOSE, MIN, MAX }, { MAX, CLOSE, MIN }, {}));
-    Test.add_func("/order/duplicates", () => check("close, close, minimize", USUAL, { CLOSE, MIN, MAX }, {}));
-    Test.add_func("/order/unknown", () => check("close, min, foo maximize", USUAL, { CLOSE, MAX, MIN }, { "min", "foo" }));
+    Test.add_func("/order/duplicates", () => check("close close minimize", USUAL, { CLOSE, MIN, MAX }, {}));
+    Test.add_func("/order/unknown", () => check("close min foo maximize", USUAL, { CLOSE, MAX, MIN }, { "min", "foo" }));
     Test.run();
 }

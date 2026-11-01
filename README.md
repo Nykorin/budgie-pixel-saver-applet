@@ -7,9 +7,9 @@ in the panel. Inspired from gnome extension pixel-saver.
 * **Pixel Saver Buttons**: minimize, maximize and close buttons. Settings: a switch per button, the
   button order, hide while the window isn't maximized.
 
-  The order is the button names (`Minimize`, `Maximize`, `Close`) separated by commas or spaces, in
-  any case, e.g. `close, minimize, maximize` or `Close Minimize`. Buttons left out follow in the usual
-  order, and words that aren't button names are ignored (the settings field marks them). Left empty,
+  The order is the lowercase button names (`minimize`, `maximize`, `close`) separated by spaces,
+  e.g. `close minimize maximize` or `close minimize`. Buttons left out follow in the usual order, and
+  words that aren't button names are ignored (the settings field marks them). Left empty,
   the order follows Budgie's window button layout.
 
 Add each applet as often as you like: every copy has its own settings, so you can, for example, put the

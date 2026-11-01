@@ -148,13 +148,13 @@ public class ButtonsApplet : Budgie.Applet
         grid.add_switch(settings, "show-close", "Close");
 
         var order = new Gtk.Entry();
-        order.placeholder_text = "Minimize, Maximize, Close";
+        order.placeholder_text = "minimize maximize close";
         order.width_chars = 22;
         settings.bind("order", order, "text", SettingsBindFlags.DEFAULT);
         order.changed.connect(() => mark_unknown_names(order));
         mark_unknown_names(order);
         grid.add_row("Order", order);
-        grid.add_note(new Gtk.Label("Button names separated by commas or spaces, in any case. "
+        grid.add_note(new Gtk.Label("Lowercase button names separated by spaces. "
             + "Buttons left out follow in the usual order; left empty, the order follows "
             + "Budgie's window button layout."));
 
@@ -173,7 +173,7 @@ public class ButtonsApplet : Budgie.Applet
             entry.secondary_icon_tooltip_text = null;
         } else {
             entry.secondary_icon_name = "dialog-warning-symbolic";
-            entry.secondary_icon_tooltip_text = "Ignored: %s\nUse Minimize, Maximize or Close".printf(
+            entry.secondary_icon_tooltip_text = "Ignored: %s\nUse minimize, maximize or close, separated by spaces".printf(
                 string.joinv(", ", unknown));
         }
     }

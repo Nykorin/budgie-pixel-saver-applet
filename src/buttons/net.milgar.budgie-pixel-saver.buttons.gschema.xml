@@ -16,7 +16,7 @@
     <key type="s" name="order">
       <default>''</default>
       <summary>Button order</summary>
-      <description>Button names (Minimize, Maximize, Close) separated by commas or spaces, in any case. Buttons left out follow in the usual order; empty follows Budgie's window button layout.</description>
+      <description>Lowercase button names (minimize, maximize, close) separated by spaces. Buttons left out follow in the usual order; empty follows Budgie's window button layout.</description>
     </key>
     <key type="b" name="hide-for-unmaximized">
       <default>false</default>

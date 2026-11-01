@@ -16,6 +16,9 @@ Each bullet starts with the file it touches; paths are relative to the repositor
 - **CHANGELOG.md:** This file, for the changes made on top of upstream *(Claude, directed by user)*
 
 ### Changed
+- **src/buttons/WindowButton.vala, src/buttons/ButtonsApplet.vala:** The order setting takes only lowercase names separated by spaces (`close minimize maximize`); a word with capitals or commas is unknown, which the settings field flags and the applet ignores. The placeholder, note and tooltip say so *(Claude, directed by user)*
+- **src/buttons/test-window-button.vala:** Tests for capitals, commas and extra spaces replace the mixed-case and comma ones *(Claude, directed by user)*
+- **README.md, src/buttons/net.milgar.budgie-pixel-saver.buttons.gschema.xml:** The order format *(Claude, directed by user)*
 - **meson.build:** Needs meson 1.11, for `install_vala_header`/`install_vala_vapi` *(Claude, directed by user)*
 - **README.md:** Both applets, the order syntax, and that panels with the old applet need the new ones added *(Claude, directed by user)*
 - **src/BudgiePixelSaverApplet.vala:** The title and buttons sit in a `TitleBox`, a GtkBox with the CSS name `headerbar`, so the theme's `headerbar button.titlebutton` rules (hover, pressed, close colours) apply to the buttons; built-in CSS at application priority strips the header bar's own background, border, shadow and height inside the panel, and `~/.config/gtk-3.0/gtk.css` still overrides it. The title has the `.title` class, which most themes make bold. Compared in a nested session with Materia, Adwaita and CachyOS-Nord *(Claude, directed by user)*
