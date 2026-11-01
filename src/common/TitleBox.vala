@@ -8,8 +8,10 @@ namespace PixelSaver {
 public class TitleBox : Gtk.Box
 {
     /* Undoes what themes give a window's header bar itself, so only the buttons and
-     * title keep the theme's look. Priority APPLICATION: above the theme, below the
-     * user's own ~/.config/gtk-3.0/gtk.css. */
+     * title keep the theme's look. Priority just above USER: a theme copied into
+     * ~/.config/gtk-3.0/gtk.css (USER priority) would otherwise paint the header bar's
+     * background behind the applets on a transparent panel. It only touches the box,
+     * so the buttons' own styling still comes from the theme and the user's CSS. */
     const string CSS = """
         headerbar.pixel-saver {
             background: none;
@@ -48,7 +50,7 @@ public class TitleBox : Gtk.Box
             warning("Could not load the applet's CSS: %s", e.message);
         }
         Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), css_provider,
-            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
+            Gtk.STYLE_PROVIDER_PRIORITY_USER + 1);
     }
 
     /** Lays the box out along the panel: vertical on left and right panels. */

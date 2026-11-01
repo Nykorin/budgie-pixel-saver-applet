@@ -40,6 +40,7 @@ Each bullet starts with the file it touches; paths are relative to the repositor
 - **src/settings.ui, src/net.milgar.budgie-pixel-saver.gschema.xml:** The "Hide for Client Side Decorated windows" option: on Wayland the panel can't see whether a window draws its own title bar *(Claude, directed by user)*
 
 ### Fixed
+- **src/common/TitleBox.vala:** The CSS that strips the header bar's own background, border, corners, shadow, height and margins from the applets now has a priority just above USER instead of APPLICATION. A theme copied into `~/.config/gtk-3.0/gtk.css` (USER priority) won over it and painted its `.titlebar` background (dark, with rounded top corners) behind the title and buttons on a transparent panel. The buttons' own styling still comes from the theme and the user's CSS. Tested in a nested Budgie session on wayfire with a transparent panel, CachyOS-Nord and a copy of the user's `gtk.css` *(Claude, directed by user)*
 - **src/buttons/test-window-button.vala:** The test's button constants are `B_MIN`, `B_MAX` and `B_CLOSE`: as `MIN` and `MAX` they replaced GLib's `MIN()`/`MAX()` macros in the generated C *(Claude, directed by user)*
 - **src/common/TitleBox.vala:** Applets disconnect from the shared window tracker when they're removed from the panel; before, the tracker kept calling into removed applets *(Claude, directed by user)*
 
