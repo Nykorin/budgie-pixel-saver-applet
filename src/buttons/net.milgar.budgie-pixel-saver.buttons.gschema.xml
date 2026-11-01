@@ -1,22 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
   <schema id="net.milgar.budgie-pixel-saver.buttons">
-    <key type="b" name="show-minimize">
-      <default>true</default>
-      <summary>Show the minimize button</summary>
-    </key>
-    <key type="b" name="show-maximize">
-      <default>true</default>
-      <summary>Show the maximize button</summary>
-    </key>
-    <key type="b" name="show-close">
-      <default>true</default>
-      <summary>Show the close button</summary>
-    </key>
     <key type="s" name="order">
       <default>''</default>
-      <summary>Button order</summary>
-      <description>Lowercase button names (minimize, maximize, close) separated by spaces. Buttons left out follow in the usual order; empty follows Budgie's window button layout.</description>
+      <summary>Buttons to show, in order</summary>
+      <description>Lowercase button names (minimize, maximize, close) separated by spaces. Buttons left out aren't shown; empty shows all three in Budgie's window button layout.</description>
     </key>
     <key type="b" name="hide-for-unmaximized">
       <default>false</default>

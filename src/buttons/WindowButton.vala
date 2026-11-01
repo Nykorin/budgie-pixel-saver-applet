@@ -17,9 +17,9 @@ public enum WindowButton {
     }
 
     /**
-     * The button order from the "order" setting: lowercase button names separated
-     * by spaces. Buttons it leaves out follow in default_order. Words that aren't
-     * button names go to unknown.
+     * The buttons to show, in order, from the "order" setting: lowercase button
+     * names separated by spaces. Buttons it leaves out aren't shown; with no button
+     * names at all, it's default_order. Words that aren't button names go to unknown.
      */
     public static WindowButton[] parse_order(string text, WindowButton[] default_order, out string[] unknown) {
         WindowButton[] order = {};
@@ -33,14 +33,11 @@ public enum WindowButton {
                 order += button;
             }
         }
-        foreach (WindowButton button in default_order) {
-            if (!contains(order, button)) order += button;
-        }
         unknown = bad;
-        return order;
+        return order.length > 0 ? order : default_order;
     }
 
-    private static bool contains(WindowButton[] list, WindowButton button) {
+    public static bool contains(WindowButton[] list, WindowButton button) {
         foreach (WindowButton b in list) {
             if (b == button) return true;
         }

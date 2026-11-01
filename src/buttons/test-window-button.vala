@@ -21,12 +21,13 @@ void main(string[] args) {
     Test.add_func("/order/empty", () => check("", USUAL, USUAL, {}));
     Test.add_func("/order/blank", () => check("   ", USUAL, USUAL, {}));
     Test.add_func("/order/spaces", () => check("maximize close minimize", USUAL, { B_MAX, B_CLOSE, B_MIN }, {}));
-    Test.add_func("/order/extra-spaces", () => check("  close   minimize ", USUAL, { B_CLOSE, B_MIN, B_MAX }, {}));
-    Test.add_func("/order/capitals", () => check("Close MINIMIZE maximize", USUAL, { B_MAX, B_MIN, B_CLOSE }, { "Close", "MINIMIZE" }));
-    Test.add_func("/order/commas", () => check("close,minimize maximize", USUAL, { B_MAX, B_MIN, B_CLOSE }, { "close,minimize" }));
-    Test.add_func("/order/partial", () => check("close", USUAL, { B_CLOSE, B_MIN, B_MAX }, {}));
-    Test.add_func("/order/partial-left-default", () => check("maximize", { B_CLOSE, B_MIN, B_MAX }, { B_MAX, B_CLOSE, B_MIN }, {}));
-    Test.add_func("/order/duplicates", () => check("close close minimize", USUAL, { B_CLOSE, B_MIN, B_MAX }, {}));
-    Test.add_func("/order/unknown", () => check("close min foo maximize", USUAL, { B_CLOSE, B_MAX, B_MIN }, { "min", "foo" }));
+    Test.add_func("/order/left-default", () => check("", { B_CLOSE, B_MIN, B_MAX }, { B_CLOSE, B_MIN, B_MAX }, {}));
+    Test.add_func("/order/extra-spaces", () => check("  close   minimize ", USUAL, { B_CLOSE, B_MIN }, {}));
+    Test.add_func("/order/capitals", () => check("Close MINIMIZE maximize", USUAL, { B_MAX }, { "Close", "MINIMIZE" }));
+    Test.add_func("/order/commas", () => check("close,minimize maximize", USUAL, { B_MAX }, { "close,minimize" }));
+    Test.add_func("/order/one", () => check("close", USUAL, { B_CLOSE }, {}));
+    Test.add_func("/order/duplicates", () => check("close close minimize", USUAL, { B_CLOSE, B_MIN }, {}));
+    Test.add_func("/order/unknown", () => check("close min foo maximize", USUAL, { B_CLOSE, B_MAX }, { "min", "foo" }));
+    Test.add_func("/order/only-unknown", () => check("foo bar", USUAL, USUAL, { "foo", "bar" }));
     Test.run();
 }

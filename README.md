@@ -4,13 +4,13 @@ in the panel. Inspired from gnome extension pixel-saver.
 
 * **Pixel Saver Title**: the active window's title. Double-click it to (un)maximize the window,
   right-click it for the window menu. Settings: title length, hide while the window isn't maximized.
-* **Pixel Saver Buttons**: minimize, maximize and close buttons. Settings: a switch per button, the
-  button order, hide while the window isn't maximized.
+* **Pixel Saver Buttons**: minimize, maximize and close buttons. Settings: which buttons to show
+  and in what order, hide while the window isn't maximized.
 
-  The order is the lowercase button names (`minimize`, `maximize`, `close`) separated by spaces,
-  e.g. `close minimize maximize` or `close minimize`. Buttons left out follow in the usual order, and
-  words that aren't button names are ignored (the settings field marks them). Left empty,
-  the order follows Budgie's window button layout.
+  The buttons are given as lowercase names (`minimize`, `maximize`, `close`) separated by spaces,
+  e.g. `close minimize maximize`, or just `close` for a lone close button. Buttons left out aren't
+  shown, and words that aren't button names are ignored (the settings field marks them). Left empty,
+  all three show in Budgie's window button layout.
 
 Add each applet as often as you like: every copy has its own settings, so you can, for example, put the
 title on the left and a lone close button at the far right. The buttons take the GTK theme's window

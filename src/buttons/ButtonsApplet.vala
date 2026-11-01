@@ -19,6 +19,7 @@ public class ButtonsApplet : Budgie.Applet
     TitleBox container;
 
     bool is_active_window_maximized = false;
+    WindowButton[] shown = {};
 
     public string uuid { public set; public get; }
 
@@ -71,7 +72,6 @@ public class ButtonsApplet : Budgie.Applet
 
         show_all();
         this.apply_order();
-        this.update_visibility();
         manager.refresh();
     }
 
@@ -97,7 +97,7 @@ public class ButtonsApplet : Budgie.Applet
         }
     }
 
-    /** The order buttons take when the "order" setting doesn't name them. */
+    /** The buttons, in order, when the "order" setting names none. */
     private WindowButton[] default_order() {
         if (this.wm_settings != null && this.wm_settings.get_string("button-style") == "left") {
             return { WindowButton.CLOSE, WindowButton.MINIMIZE, WindowButton.MAXIMIZE };
@@ -113,19 +113,21 @@ public class ButtonsApplet : Budgie.Applet
         }
     }
 
+    /** Shows the buttons the "order" setting names, in its order; the others are hidden. */
     private void apply_order() {
         string[] unknown;
-        var order = WindowButton.parse_order(this.settings.get_string("order"), this.default_order(), out unknown);
-        for (int i = 0; i < order.length; i++) {
-            this.container.reorder_child(this.button_for(order[i]), i);
+        this.shown = WindowButton.parse_order(this.settings.get_string("order"), this.default_order(), out unknown);
+        for (int i = 0; i < this.shown.length; i++) {
+            this.container.reorder_child(this.button_for(this.shown[i]), i);
         }
+        this.update_visibility();
     }
 
     void update_visibility() {
         bool hide_all = !this.is_active_window_maximized && this.settings.get_boolean("hide-for-unmaximized");
-        this.minimize_button.visible = !hide_all && this.settings.get_boolean("show-minimize");
-        this.maximize_button.visible = !hide_all && this.settings.get_boolean("show-maximize");
-        this.close_button.visible = !hide_all && this.settings.get_boolean("show-close");
+        foreach (WindowButton button in new WindowButton[] { WindowButton.MINIMIZE, WindowButton.MAXIMIZE, WindowButton.CLOSE }) {
+            this.button_for(button).visible = !hide_all && WindowButton.contains(this.shown, button);
+        }
         queue_resize();
     }
 
@@ -143,20 +145,16 @@ public class ButtonsApplet : Budgie.Applet
         var settings = this.get_applet_settings(this.uuid);
         var grid = new SettingsGrid();
 
-        grid.add_switch(settings, "show-minimize", "Minimize");
-        grid.add_switch(settings, "show-maximize", "Maximize");
-        grid.add_switch(settings, "show-close", "Close");
-
         var order = new Gtk.Entry();
         order.placeholder_text = "minimize maximize close";
         order.width_chars = 22;
         settings.bind("order", order, "text", SettingsBindFlags.DEFAULT);
         order.changed.connect(() => mark_unknown_names(order));
         mark_unknown_names(order);
-        grid.add_row("Order", order);
-        grid.add_note(new Gtk.Label("Lowercase button names separated by spaces. "
-            + "Buttons left out follow in the usual order; left empty, the order follows "
-            + "Budgie's window button layout."));
+        grid.add_row("Buttons", order);
+        grid.add_note(new Gtk.Label("The buttons to show, in order: lowercase names "
+            + "separated by spaces, e.g. \"close minimize\". Left empty, all three show "
+            + "in Budgie's window button layout."));
 
         grid.add_switch(settings, "hide-for-unmaximized", "Hide for unmaximized windows");
 
